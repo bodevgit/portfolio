@@ -16,6 +16,7 @@
         /* Override styles to ensure space background */
         body {
             background-color: #000000 !important;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
         
         #bg-canvas {
@@ -125,6 +126,63 @@
         .dropdown-divider {
             border-color: rgba(102, 16, 242, 0.2);
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 991.98px) {
+            /* Navbar mobile styling */
+            .navbar-collapse {
+                background: rgba(10, 10, 20, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 8px;
+                padding: 1rem;
+                margin-top: 0.5rem;
+                border: 1px solid rgba(102, 16, 242, 0.2);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            }
+            
+            .navbar-nav .nav-item {
+                margin-bottom: 0.5rem;
+            }
+            
+            .nav-link.dashboard, .user-menu {
+                margin-left: 0;
+                display: inline-block;
+                width: 100%;
+                text-align: left;
+                margin-top: 0.5rem;
+            }
+            
+            /* Make dropdown menu always visible on mobile when clicked */
+            .dropdown-menu.show {
+                display: block;
+                width: 100%;
+                margin-top: 0.25rem;
+                position: static !important;
+                transform: none !important;
+            }
+            
+            /* Login/signup buttons inline on mobile */
+            .auth-buttons {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.25rem;
+                padding: 0.5rem 0;
+            }
+            
+            /* Ensure toggler is visible and properly styled */
+            .navbar-toggler {
+                border-color: rgba(102, 16, 242, 0.5);
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 0.1rem rgba(102, 16, 242, 0.5);
+            }
+        }
     </style>
 </head>
 <body>
@@ -188,16 +246,18 @@
                         </ul>
                     </li>
                     <% } else if (!locals.isAdmin) { %>
-                    <li class="nav-item">
-                        <a class="nav-link <%= page === 'login' ? 'active' : '' %>" href="/user/login">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <%= page === 'signup' ? 'active' : '' %>" href="/user/signup">
-                            <i class="fas fa-user-plus"></i> Sign Up
-                        </a>
-                    </li>
+                    <div class="auth-buttons d-lg-flex">
+                        <li class="nav-item">
+                            <a class="nav-link <%= page === 'login' ? 'active' : '' %>" href="/user/login">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= page === 'signup' ? 'active' : '' %>" href="/user/signup">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    </div>
                     <% } %>
                 </ul>
             </div>
