@@ -6,7 +6,11 @@ const fs = require('fs');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const chokidar = require('chokidar');
-const browserSync = require('browser-sync');
+// Only use browser-sync in development mode
+let browserSync;
+if (process.env.NODE_ENV !== 'production') {
+    browserSync = require('browser-sync');
+}
 const bcrypt = require('bcrypt');
 
 // Initialize express app
@@ -1178,7 +1182,7 @@ app.listen(PORT, () => {
     console.log(`Visit http://localhost:${PORT} to view the portfolio`);
     
     // Initialize Browser-Sync for development
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && browserSync) {
         // Start BrowserSync
         browserSync.init({
             proxy: `localhost:${PORT}`,
