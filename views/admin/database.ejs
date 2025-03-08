@@ -1,0 +1,70 @@
+<!-- Database Management View -->
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Database Management</h1>
+                <div>
+                    <a href="/admin/dashboard" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/logout" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+            <p class="text-light">Manage your SQLite database tables</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card space-card">
+                <div class="card-body">
+                    <h3>Database Tables</h3>
+                    
+                    <% if (tables && tables.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Table Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% tables.forEach(table => { %>
+                                        <tr>
+                                            <td><%= table.name %></td>
+                                            <td>
+                                                <a href="/admin/table/<%= table.name %>" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-table me-1"></i> View Data
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            No tables found in the database.
+                        </div>
+                    <% } %>
+                    
+                    <div class="mt-4">
+                        <h4>Database Information</h4>
+                        <p class="text-light">
+                            <strong>Database Type:</strong> SQLite3<br>
+                            <strong>File Location:</strong> <code>c:\Dev\Portfolio\documents.db</code>
+                        </p>
+                        <p class="small text-light">
+                            SQLite is a file-based database engine that doesn't require a separate server process.
+                            Your database file contains all your tables and data.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

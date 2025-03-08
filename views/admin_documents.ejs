@@ -1,0 +1,319 @@
+<!-- Document Management System -->
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="mb-3">Document Management System</h1>
+            <p class="lead">Organize, store, and access all your important documents in one place.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8 col-lg-9">
+            <!-- Search Bar -->
+            <form action="/documents" method="GET" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control search-input" placeholder="Search documents..." value="<%= search %>">
+                    <input type="hidden" name="category" value="<%= category || '' %>">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 col-lg-3 text-md-end mb-3">
+            <!-- Upload Button - Only visible to admins or owners -->
+            <% if (locals.isAdmin || locals.user) { %>
+                <% if (locals.isAdmin) { %>
+                    <a href="/upload-document" class="btn cosmic-btn pulse">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </a>
+                <% } else { %>
+                    <a href="/user/upload-document" class="btn cosmic-btn pulse">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </a>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Category Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card float">
+                <div class="card-header">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="list-group list-group-flush transparent-list">
+                    <a href="/documents?category=all" class="list-group-item category-link <%= category === 'all' ? 'active' : '' %>">
+                        <i class="fas fa-folder me-2"></i> All Documents
+                    </a>
+                    <a href="/documents?category=school" class="list-group-item category-link <%= category === 'school' ? 'active' : '' %>">
+                        <i class="fas fa-graduation-cap me-2"></i> School
+                    </a>
+                    <a href="/documents?category=work" class="list-group-item category-link <%= category === 'work' ? 'active' : '' %>">
+                        <i class="fas fa-briefcase me-2"></i> Work
+                    </a>
+                    <a href="/documents?category=personal" class="list-group-item category-link <%= category === 'personal' ? 'active' : '' %>">
+                        <i class="fas fa-user me-2"></i> Personal
+                    </a>
+                    <a href="/documents?category=projects" class="list-group-item category-link <%= category === 'projects' ? 'active' : '' %>">
+                        <i class="fas fa-project-diagram me-2"></i> Projects
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document List -->
+        <div class="col-md-9">
+            <div class="card float">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="mb-0">
+                                <%= category === 'all' ? 'All Documents' : category.charAt(0).toUpperCase() + category.slice(1) + ' Documents' %>
+                                <% if (search) { %>
+                                    <small class="text-light">- Search results for "<%= search %>"</small>
+                                <% } %>
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-primary"><%= documents.length %> document(s)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <% if (documents.length === 0) { %>
+                        <div class="text-center p-5">
+                            <i class="fas fa-file-alt fa-3x text-light opacity-50 mb-3"></i>
+                            <h5>No documents found</h5>
+                            <p class="text-light opacity-75">
+                                <% if (search) { %>
+                                    No documents match your search criteria. Try different keywords or clear your search.
+                                <% } else { %>
+                                    Start uploading documents to your collection.
+                                <% } %>
+                            </p>
+                        </div>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 space-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% documents.forEach(function(doc) { %>
+                                        <tr>
+                                            <td>
+                                                <strong><%= doc.title %></strong>
+                                                <% if (doc.description) { %>
+                                                    <br>
+                                                    <small class="text-light opacity-75"><%= doc.description.substring(0, 50) %><%= doc.description.length > 50 ? '...' : '' %></small>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <span class="category-pill 
+                                                    <%= doc.category === 'school' ? 'school' : 
+                                                       doc.category === 'work' ? 'work' : 
+                                                       doc.category === 'personal' ? 'personal' : 
+                                                       doc.category === 'projects' ? 'projects' : 'other' %>">
+                                                    <%= doc.category %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <% 
+                                                let icon = 'fa-file';
+                                                if (doc.filetype) {
+                                                    if (doc.filetype.includes('pdf')) icon = 'fa-file-pdf';
+                                                    else if (doc.filetype.includes('word') || doc.filetype.includes('doc')) icon = 'fa-file-word';
+                                                    else if (doc.filetype.includes('excel') || doc.filetype.includes('sheet') || doc.filetype.includes('csv')) icon = 'fa-file-excel';
+                                                    else if (doc.filetype.includes('image')) icon = 'fa-file-image';
+                                                    else if (doc.filetype.includes('zip') || doc.filetype.includes('rar')) icon = 'fa-file-archive';
+                                                    else if (doc.filetype.includes('text')) icon = 'fa-file-alt';
+                                                }
+                                                %>
+                                                <i class="far <%= icon %> me-1"></i>
+                                                <%= doc.filetype ? (doc.filetype.includes('/') ? doc.filetype.split('/')[1].toUpperCase() : doc.filetype.toUpperCase()) : 'Unknown' %>
+                                            </td>
+                                            <td>
+                                                <%= Math.round(doc.filesize / 1024) %> KB
+                                            </td>
+                                            <td>
+                                                <%= new Date(doc.upload_date).toLocaleDateString() %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="/download/<%= doc.id %>" class="btn btn-sm btn-outline-primary" title="Download">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-info" title="View Details" 
+                                                        data-bs-toggle="modal" data-bs-target="#detailsModal<%= doc.id %>">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </button>
+                                                    <% if ((locals.isAdmin || locals.user) && (locals.user && doc.user_id === locals.user.id || locals.isAdmin)) { %>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger delete-btn" title="Delete" 
+                                                        data-doc-id="<%= doc.id %>"
+                                                        data-doc-title="<%= doc.title %>">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                    <% } %>
+                                                </div>
+
+                                                <!-- Details Modal -->
+                                                <div class="modal fade" id="detailsModal<%= doc.id %>" tabindex="-1" aria-labelledby="detailsModalLabel<%= doc.id %>" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content space-modal">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="detailsModalLabel<%= doc.id %>">Document Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <h5><%= doc.title %></h5>
+                                                                    <% if (doc.description) { %>
+                                                                        <p><%= doc.description %></p>
+                                                                    <% } %>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <strong>Category:</strong> <%= doc.category %>
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <strong>File Type:</strong> <%= doc.filetype ? (doc.filetype.includes('/') ? doc.filetype.split('/')[1].toUpperCase() : doc.filetype.toUpperCase()) : 'Unknown' %>
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <strong>File Size:</strong> <%= Math.round(doc.filesize / 1024) %> KB
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <strong>Upload Date:</strong> <%= new Date(doc.upload_date).toLocaleDateString() %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <a href="/download/<%= doc.id %>" class="btn btn-primary">
+                                                                    <i class="fas fa-download me-1"></i> Download
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <% if ((locals.isAdmin || locals.user) && (locals.user && doc.user_id === locals.user.id || locals.isAdmin)) { %>
+                                                <!-- Delete Modal -->
+                                                <div class="modal fade" id="deleteModal<%= doc.id %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= doc.id %>" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content space-modal">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteModalLabel<%= doc.id %>">Confirm Delete</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Are you sure you want to delete "<%= doc.title %>"? This action cannot be undone.</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <form action="/delete/<%= doc.id %>" method="POST" class="d-inline">
+                                                                    <button type="submit" class="btn btn-danger">
+                                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-info">
+                <div class="modal-header border-info">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-warning">Are you sure you want to delete this document?</p>
+                    <p id="deleteDocumentTitle" class="fs-5 text-info"></p>
+                    
+                    <div class="d-flex justify-content-center mt-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                    </div>
+                    <p class="text-center mt-3 text-light">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-info">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" action="" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Document</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Some decorative space elements -->
+    <div class="space-object comet" style="top: 30%; left: 15%;"></div>
+    <div class="space-object comet" style="top: 70%; left: 85%;"></div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content space-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="" selected disabled>Select a category</option>
+                            <option value="school">School</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="projects">Projects</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Document File</label>
+                        <input class="form-control" type="file" id="file" name="document" required>
+                        <small class="form-text text-light">Allowed file types: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, TXT, ZIP (Max 10MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i> Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

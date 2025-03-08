@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: portfolio
+    env: node
+    buildCommand: npm ci --production
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    disk:
+      name: portfolio-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

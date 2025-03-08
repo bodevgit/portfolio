@@ -1,0 +1,122 @@
+<!-- User Documents Page -->
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="mb-4">My Documents</h1>
+            <p class="lead">Manage your personal document collection.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form action="/user/documents" method="GET" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control search-input" placeholder="Search documents..." value="<%= search || '' %>">
+                    <select name="category" class="form-select category-select">
+                        <option value="">All Categories</option>
+                        <option value="work" <%= category === 'work' ? 'selected' : '' %>>Work</option>
+                        <option value="personal" <%= category === 'personal' ? 'selected' : '' %>>Personal</option>
+                        <option value="school" <%= category === 'school' ? 'selected' : '' %>>School</option>
+                        <option value="projects" <%= category === 'projects' ? 'selected' : '' %>>Projects</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+            <a href="/user/upload-document" class="btn btn-primary">
+                <i class="fas fa-upload me-2"></i>Upload New Document
+            </a>
+        </div>
+    </div>
+
+    <!-- Document list -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-space">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Size</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (documents.length === 0) { %>
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-folder-open fa-3x mb-3"></i>
+                                        <h5>No documents found</h5>
+                                        <p>Start by uploading your first document.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% documents.forEach(document => { %>
+                                <tr>
+                                    <td><%= document.title %></td>
+                                    <td><%= document.description || 'No description' %></td>
+                                    <td>
+                                        <span class="category-badge <%= document.category || 'uncategorized' %>">
+                                            <%= document.category || 'Uncategorized' %>
+                                        </span>
+                                    </td>
+                                    <td><%= formatFileSize(document.filesize) %></td>
+                                    <td><%= getFileTypeDisplay(document.filetype) %></td>
+                                    <td><%= formatDate(document.upload_date) %></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="/download/<%= document.id %>" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-danger delete-btn" 
+                                                    data-doc-id="<%= document.id %>" 
+                                                    data-doc-title="<%= document.title %>">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal for Document Deletion -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-space border-starlight">
+                <div class="modal-header border-starlight">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "<span id="deleteDocumentTitle"></span>"?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-starlight">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" action="/user/delete/0" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Some decorative space elements -->
+    <div class="space-object planet" style="top: 20%; right: 5%;"></div>
+    <div class="space-object star pulse" style="top: 70%; left: 8%;"></div>
+    <div class="space-object comet" style="top: 40%; right: 15%;"></div>
+</div>

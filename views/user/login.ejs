@@ -1,0 +1,42 @@
+<!-- User Login Page -->
+<div class="container space-card mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card space-card">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Login to Your Account</h2>
+                    
+                    <% if (locals.error) { %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                    <% } %>
+                    
+                    <form action="/user/login" method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-light">Don't have an account? <a href="/user/signup" class="text-primary">Sign up</a></small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Space decoration elements -->
+            <div class="space-object comet" style="top: 10%; left: 5%;"></div>
+            <div class="space-object comet" style="top: 80%; left: 90%;"></div>
+        </div>
+    </div>
+</div>

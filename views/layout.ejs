@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | My Portfolio</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Override styles to ensure space background */
+        body {
+            background-color: #000000 !important;
+        }
+        
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .container:not(footer .container) {
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(3px) !important;
+            -webkit-backdrop-filter: blur(3px) !important;
+            border: 1px solid rgba(102, 16, 242, 0.05) !important;
+        }
+        
+        main.container {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .bg-light {
+            background-color: rgba(10, 10, 20, 0.3) !important;
+        }
+        
+        /* Admin Dashboard button styling */
+        .nav-link.dashboard {
+            background: linear-gradient(45deg, #5425b3, #2b2473);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            box-shadow: 0 0 10px rgba(84, 37, 179, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.dashboard:hover {
+            background: linear-gradient(45deg, #6535c3, #3c3484);
+            box-shadow: 0 0 15px rgba(101, 53, 195, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.dashboard i {
+            margin-right: 0.35rem;
+        }
+        
+        /* Cosmic button styling for upload document */
+        .cosmic-btn {
+            background: linear-gradient(45deg, #5425b3, #2b2473);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 0 10px rgba(84, 37, 179, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .cosmic-btn:hover {
+            background: linear-gradient(45deg, #6535c3, #3c3484);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(101, 53, 195, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .cosmic-btn i {
+            margin-right: 0.35rem;
+        }
+        
+        .user-menu {
+            background: linear-gradient(45deg, #2b2473, #5425b3);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            box-shadow: 0 0 10px rgba(84, 37, 179, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .user-menu:hover {
+            background: linear-gradient(45deg, #3c3484, #6535c3);
+            box-shadow: 0 0 15px rgba(101, 53, 195, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            background: rgba(20, 10, 40, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 16, 242, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .dropdown-item {
+            color: var(--text-light);
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(102, 16, 242, 0.3);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-divider {
+            border-color: rgba(102, 16, 242, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Bodev</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'home' ? 'active' : '' %>" href="/">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'portfolio' ? 'active' : '' %>" href="/portfolio">
+                            <i class="fas fa-briefcase"></i> Portfolio
+                        </a>
+                    </li>
+                    <% if (locals.isAdmin) { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'documents' ? 'active' : '' %>" href="/documents">
+                            <i class="fas fa-file-alt"></i> Documents
+                        </a>
+                    </li>
+                    <% } %>
+                    <% if (locals.user) { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'planning' ? 'active' : '' %>" href="/user/planning">
+                            <i class="fas fa-calendar-alt"></i> Planning
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'my-documents' ? 'active' : '' %>" href="/user/documents">
+                            <i class="fas fa-folder-open"></i> My Documents
+                        </a>
+                    </li>
+                    <% } %>
+                    <% if (locals.isAdmin) { %>
+                    <li class="nav-item">
+                        <a class="nav-link dashboard <%= page === 'admin' ? 'active' : '' %>" href="/admin/dashboard">
+                            <i class="fas fa-user-shield"></i> Admin Dashboard
+                        </a>
+                    </li>
+                    <% } %>
+                    <% if (locals.user) { %>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-menu" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-astronaut"></i> Welcome, <%= user.name || user.username %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/user/profile"><i class="fas fa-id-card me-2"></i>My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/user/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    <% } else if (!locals.isAdmin) { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'login' ? 'active' : '' %>" href="/user/login">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= page === 'signup' ? 'active' : '' %>" href="/user/signup">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; <%= new Date().getFullYear() %> Bodev. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="https://github.com/bodevgit" class="text-white me-3"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/bo-dev-4b0b55309/" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                <a href="https://x.com/bo_azc" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Direct script to remove any stuck backdrop immediately -->
+    <script>
+    // Remove stuck backdrop immediately and set an interval to keep checking
+    function purgeBackdrops() {
+        // Get all backdrops
+        var backdrops = document.querySelectorAll('.modal-backdrop');
+        
+        // Remove each one
+        backdrops.forEach(function(backdrop) {
+            if (backdrop && backdrop.parentNode) {
+                backdrop.parentNode.removeChild(backdrop);
+            }
+        });
+        
+        // Also clean up body styles
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+    
+    // Run immediately
+    purgeBackdrops();
+    
+    // Also run whenever the page becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            purgeBackdrops();
+        }
+    });
+    
+    // Keep checking with an interval
+    setInterval(purgeBackdrops, 500);
+    </script>
+    
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    <!-- 3D Background JS -->
+    <script src="/js/background.js"></script>
+</body>
+</html>

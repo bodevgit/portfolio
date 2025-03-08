@@ -1,0 +1,109 @@
+<!-- Dedicated Document Upload Page -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card space-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2>Upload Document</h2>
+                    <a href="/documents" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Documents
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="mb-4">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <!-- Replacing select with radio buttons to prevent navigation issue -->
+                        <div class="mb-4">
+                            <label class="form-label d-block">Category</label>
+                            <div class="space-category-options">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="category" id="category-school" value="school" required>
+                                    <label class="form-check-label" for="category-school">
+                                        <i class="fas fa-graduation-cap me-1"></i> School
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="category" id="category-work" value="work">
+                                    <label class="form-check-label" for="category-work">
+                                        <i class="fas fa-briefcase me-1"></i> Work
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="category" id="category-personal" value="personal">
+                                    <label class="form-check-label" for="category-personal">
+                                        <i class="fas fa-user me-1"></i> Personal
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="category" id="category-projects" value="projects">
+                                    <label class="form-check-label" for="category-projects">
+                                        <i class="fas fa-project-diagram me-1"></i> Projects
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="document-file" class="form-label">Document File</label>
+                            <input class="form-control" type="file" id="document-file" name="document" required>
+                            <small class="form-text text-light">Allowed file types: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, TXT, ZIP (Max 10MB)</small>
+                            <div id="filePreview" class="mt-2 d-none">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-file me-2"></i> <span id="fileName"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/documents" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary" id="uploadButton">
+                                <i class="fas fa-upload me-2"></i> Upload Document
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom styles for the category radio buttons -->
+<style>
+    .space-category-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .space-category-options .form-check {
+        padding: 0.5rem 1rem;
+        background: rgba(30, 40, 80, 0.5);
+        border-radius: 8px;
+        border: 1px solid rgba(100, 120, 220, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .space-category-options .form-check:hover {
+        background: rgba(60, 80, 140, 0.5);
+        border-color: rgba(100, 150, 255, 0.6);
+        box-shadow: 0 0 10px rgba(80, 120, 255, 0.3);
+    }
+    
+    .space-category-options .form-check-input:checked + .form-check-label {
+        color: #8af;
+    }
+    
+    .space-category-options .form-check-input:checked {
+        background-color: #5577ff;
+        border-color: #5577ff;
+    }
+</style>
+
+<!-- Include the dedicated upload.js script -->
+<script src="/js/upload.js"></script>
