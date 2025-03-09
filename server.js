@@ -34,9 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 // Session configuration
 app.use(session({
     secret: 'your-secret-key',
-    resave: true,
-    saveUninitialized: true,
-    cookie: { secure: true, maxAge: null } // No expiration
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: null } // No expiration
 }));
 
 // Middleware
